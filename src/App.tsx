@@ -44,6 +44,7 @@ function App() {
   const [token0Input, setToken0Input] = useState<string>("0");
   const [token0IsVariable, setToken0IsVariable] = useState<boolean>(false);
   const [token0IsMax, setToken0IsMax] = useState<boolean>(false);
+  const [token0IsValid, setToken0IsValid] = useState<boolean>(true);
   const [token0Balance, setToken0Balance] = useState<ethers.BigNumber>(
     ethers.BigNumber.from(0)
   );
@@ -59,11 +60,11 @@ function App() {
     if (provider) {
       const fetchData = async () => {
         const network: ethers.providers.Network = await provider.getNetwork();
-        setCurrentNetwork(network.chainId);
-        setTokenSelect(tokenList[network.chainId]);
+        setCurrentNetwork(network.chainId === 1337 ? 1 : network.chainId);
+        setTokenSelect(tokenList[network.chainId === 1337 ? 1 : network.chainId]);
         const account: string = await provider.getSigner().getAddress();
         const token0ERC20: ERC20 = ERC20__factory.connect(
-          addresses[network.chainId].tokens[token0][
+          addresses[network.chainId === 1337 ? 1 : network.chainId].tokens[token0][
             token0IsVariable
               ? "variableDebtTokenAddress"
               : "stableDebtTokenAddress"
@@ -71,7 +72,7 @@ function App() {
           provider.getSigner()
         );
         const token1ERC20: ERC20 = ERC20__factory.connect(
-          addresses[network.chainId].tokens[token1][
+          addresses[network.chainId === 1337 ? 1 : network.chainId].tokens[token1][
             token1IsVariable
               ? "variableDebtTokenAddress"
               : "stableDebtTokenAddress"
@@ -101,9 +102,11 @@ function App() {
           ],
           provider.getSigner()
         ).balanceOf(account);
+        if (token0ERC20Balance.toString() !== token0Input) {
+          setToken0IsMax(false);
+        }
         setToken0Balance(token0ERC20Balance);
       };
-      setToken0IsMax(false);
       fetchData();
     }
   }, [token0, token0IsVariable]);
@@ -122,7 +125,6 @@ function App() {
         ).balanceOf(account);
         setToken1Balance(token1ERC20Balance);
       };
-      setToken0IsMax(false);
       fetchData();
     }
   }, [token1, token1IsVariable]);
@@ -140,6 +142,7 @@ function App() {
             ],
             provider.getSigner()
           ).balanceOf(account);
+          setToken0Balance(token0ERC20Balance);
           setToken0Input(
             ethers.utils.formatUnits(
               token0ERC20Balance.toString(),
@@ -159,21 +162,49 @@ function App() {
           token1,
           token0,
           currentNetwork,
-          ethers.utils.parseUnits(
-            token0Input,
-            addresses[currentNetwork].tokens[token0].decimals
-          ).toString(),
+          ethers.utils
+            .parseUnits(
+              token0Input,
+              addresses[currentNetwork].tokens[token0].decimals
+            )
+            .toString(),
           provider
         );
-        setToken1Input(ethers.utils.formatUnits(uniswapPrice.toString(), addresses[currentNetwork].tokens[token1].decimals));
+        setToken1Input(
+          ethers.utils.formatUnits(
+            uniswapPrice.toString(),
+            addresses[currentNetwork].tokens[token1].decimals
+          )
+        );
       };
-      if (!(token0Input === "" || token0Input === "0" || token0Input === "0.0")) {
+      if (
+        !(
+          token0Input === "" ||
+          token0Input === "0" ||
+          token0Input === "." ||
+          token0Input === "0." ||
+          token0Input === "0.0"
+        )
+      ) {
+        if (
+          ethers.utils
+            .parseUnits(
+              token0Input,
+              addresses[currentNetwork].tokens[token0].decimals
+            )
+            .gt(token0Balance)
+        ) {
+          setToken0IsValid(false);
+        } else {
+          setToken0IsValid(true);
+        }
         fetchData();
       } else {
+        setToken0IsValid(true);
         setToken1Input("0");
       }
     }
-  }, [token0Input, token0, token1]);
+  }, [token0Input, token0, token1, token0IsMax, token0IsVariable, token1IsVariable]);
 
   function handleToken0Change(newToken: number) {
     if (newToken !== token1) {
@@ -315,6 +346,9 @@ function App() {
                   onChange={(event) =>
                     handleToken0InputChange(event.target.value)
                   }
+                  isInvalid={!token0IsValid}
+                  errorBorderColor="crimson"
+                  focusBorderColor={token0IsValid ? "blue.500" : "crimson"}
                 />
                 <InputRightElement width="4rem">
                   <Button
@@ -367,7 +401,7 @@ function App() {
             />
           </Center>
           <Center marginTop="2">
-            <Button marginRight="1">Approve</Button>
+            <Button marginRight="1" onClick={() => console.log(token0IsMax)}>Approve</Button>
             <Button>Swap</Button>
           </Center>
           <Center marginTop="8">

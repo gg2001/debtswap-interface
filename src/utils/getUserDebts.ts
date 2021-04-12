@@ -9,7 +9,8 @@ export interface Token {
 }
 
 async function getUserDebts(
-  provider: ethers.providers.Web3Provider | undefined
+  provider: ethers.providers.Web3Provider | undefined,
+  network: number
 ): Promise<Token[]> {
   const tokenList: { symbol: string; type: string }[] = [];
   const callList: Promise<ethers.BigNumber>[] = [];
@@ -22,11 +23,10 @@ async function getUserDebts(
     return tableItems;
   }
   const account: string = await provider.getSigner().getAddress();
-  const network: ethers.providers.Network = await provider.getNetwork();
-  if (network.chainId === 1 || network.chainId === 137) {
-    for (const tokenData of addresses[network.chainId].tokens) {
-      if (tokenData.symbol in checkUnavailableBorrow[network.chainId]) {
-        if (checkUnavailableBorrow[network.chainId][tokenData.symbol].stable) {
+  if (network === 1 || network === 137) {
+    for (const tokenData of addresses[network].tokens) {
+      if (tokenData.symbol in checkUnavailableBorrow[network]) {
+        if (checkUnavailableBorrow[network][tokenData.symbol].stable) {
           tokenList.push({ symbol: tokenData.symbol, type: "Stable" });
           callList.push(
             ERC20__factory.connect(
@@ -36,7 +36,7 @@ async function getUserDebts(
           );
         }
         if (
-          checkUnavailableBorrow[network.chainId][tokenData.symbol].variable
+          checkUnavailableBorrow[network][tokenData.symbol].variable
         ) {
           tokenList.push({ symbol: tokenData.symbol, type: "Variable" });
           callList.push(

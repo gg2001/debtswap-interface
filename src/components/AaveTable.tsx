@@ -36,7 +36,7 @@ function AaveTable({
   useEffect(() => {
     if (provider) {
       const fetchData = async () => {
-        const getTableData = await getUserDebts(provider);
+        const getTableData = await getUserDebts(provider, network);
         setTableData(getTableData);
       };
       fetchData();
