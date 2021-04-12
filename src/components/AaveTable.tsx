@@ -27,10 +27,10 @@ function formatAmount(
 
 function AaveTable({
   provider,
-  network
+  network,
 }: {
   provider: ethers.providers.Web3Provider | undefined;
-  network: number
+  network: number;
 }) {
   const [tableData, setTableData] = useState<Token[]>([]);
   useEffect(() => {
@@ -48,13 +48,21 @@ function AaveTable({
       <Td>
         {token.stable === undefined
           ? "-"
-          : formatAmount(ethers.utils.formatUnits(token.stable.toString(), addresses[network].tokens[index].decimals))}
+          : formatAmount(
+              ethers.utils.formatUnits(
+                token.stable.toString(),
+                addresses[network].tokens[index].decimals
+              )
+            )}
       </Td>
       <Td>
         {token.variable === undefined
           ? "-"
           : formatAmount(
-              ethers.utils.formatUnits(token.variable.toString(), addresses[network].tokens[index].decimals)
+              ethers.utils.formatUnits(
+                token.variable.toString(),
+                addresses[network].tokens[index].decimals
+              )
             )}
       </Td>
     </Tr>

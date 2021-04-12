@@ -19,7 +19,11 @@ function useWeb3Modal(
     infuraId: INFURA_ID,
     NETWORK: NETWORK_NAME,
   }
-): [ethers.providers.Web3Provider | undefined, CallableFunction, CallableFunction] {
+): [
+  ethers.providers.Web3Provider | undefined,
+  CallableFunction,
+  CallableFunction
+] {
   const [provider, setProvider] = useState<ethers.providers.Web3Provider>();
   const [autoLoaded, setAutoLoaded] = useState<boolean>(false);
   const { autoLoad, infuraId, NETWORK }: Config = config;

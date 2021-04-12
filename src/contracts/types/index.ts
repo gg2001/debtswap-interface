@@ -3,8 +3,12 @@
 /* eslint-disable */
 export type { DebtSwap } from "./DebtSwap";
 export type { ERC20 } from "./ERC20";
+export type { IStableDebtToken } from "./IStableDebtToken";
+export type { IVariableDebtToken } from "./IVariableDebtToken";
 export type { LendingPool } from "./LendingPool";
 
 export { DebtSwap__factory } from "./factories/DebtSwap__factory";
 export { ERC20__factory } from "./factories/ERC20__factory";
+export { IStableDebtToken__factory } from "./factories/IStableDebtToken__factory";
+export { IVariableDebtToken__factory } from "./factories/IVariableDebtToken__factory";
 export { LendingPool__factory } from "./factories/LendingPool__factory";

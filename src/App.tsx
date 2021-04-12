@@ -45,6 +45,7 @@ function App() {
   const [token0IsVariable, setToken0IsVariable] = useState<boolean>(false);
   const [token0IsMax, setToken0IsMax] = useState<boolean>(false);
   const [token0IsValid, setToken0IsValid] = useState<boolean>(true);
+  const [token0IsApprove, setToken0IsApproved] = useState<boolean>(true);
   const [token0Balance, setToken0Balance] = useState<ethers.BigNumber>(
     ethers.BigNumber.from(0)
   );
@@ -61,10 +62,14 @@ function App() {
       const fetchData = async () => {
         const network: ethers.providers.Network = await provider.getNetwork();
         setCurrentNetwork(network.chainId === 1337 ? 1 : network.chainId);
-        setTokenSelect(tokenList[network.chainId === 1337 ? 1 : network.chainId]);
+        setTokenSelect(
+          tokenList[network.chainId === 1337 ? 1 : network.chainId]
+        );
         const account: string = await provider.getSigner().getAddress();
         const token0ERC20: ERC20 = ERC20__factory.connect(
-          addresses[network.chainId === 1337 ? 1 : network.chainId].tokens[token0][
+          addresses[network.chainId === 1337 ? 1 : network.chainId].tokens[
+            token0
+          ][
             token0IsVariable
               ? "variableDebtTokenAddress"
               : "stableDebtTokenAddress"
@@ -72,7 +77,9 @@ function App() {
           provider.getSigner()
         );
         const token1ERC20: ERC20 = ERC20__factory.connect(
-          addresses[network.chainId === 1337 ? 1 : network.chainId].tokens[token1][
+          addresses[network.chainId === 1337 ? 1 : network.chainId].tokens[
+            token1
+          ][
             token1IsVariable
               ? "variableDebtTokenAddress"
               : "stableDebtTokenAddress"
@@ -204,7 +211,14 @@ function App() {
         setToken1Input("0");
       }
     }
-  }, [token0Input, token0, token1, token0IsMax, token0IsVariable, token1IsVariable]);
+  }, [
+    token0Input,
+    token0,
+    token1,
+    token0IsMax,
+    token0IsVariable,
+    token1IsVariable,
+  ]);
 
   function handleToken0Change(newToken: number) {
     if (newToken !== token1) {
@@ -401,7 +415,9 @@ function App() {
             />
           </Center>
           <Center marginTop="2">
-            <Button marginRight="1" onClick={() => console.log(token0IsMax)}>Approve</Button>
+            <Button marginRight="1" onClick={() => console.log(token0IsMax)}>
+              Approve
+            </Button>
             <Button>Swap</Button>
           </Center>
           <Center marginTop="8">

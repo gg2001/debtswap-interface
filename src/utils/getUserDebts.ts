@@ -35,9 +35,7 @@ async function getUserDebts(
             ).balanceOf(account)
           );
         }
-        if (
-          checkUnavailableBorrow[network][tokenData.symbol].variable
-        ) {
+        if (checkUnavailableBorrow[network][tokenData.symbol].variable) {
           tokenList.push({ symbol: tokenData.symbol, type: "Variable" });
           callList.push(
             ERC20__factory.connect(

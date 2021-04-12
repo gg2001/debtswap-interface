@@ -50,10 +50,7 @@ async function getUniswapPrice(
   const route = new Route(routePath, token0Token);
   const trade: Trade = new Trade(
     route,
-    new TokenAmount(
-      token1Token,
-      amount
-    ),
+    new TokenAmount(token1Token, amount),
     TradeType.EXACT_OUTPUT
   );
   const amountInMax: JSBI = trade.maximumAmountIn(slippageTolerance).raw;

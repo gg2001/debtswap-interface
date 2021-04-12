@@ -19,7 +19,8 @@ function WalletButton({
         } else {
           logoutOfWeb3Modal();
         }
-      }}>
+      }}
+    >
       {!provider ? "Connect Wallet" : "Disconnect Wallet"}
     </Button>
   );
